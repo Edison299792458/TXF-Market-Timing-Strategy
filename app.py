@@ -16,7 +16,7 @@ from streamlit_autorefresh import st_autorefresh
 st_autorefresh(interval=60000, key="data_refresh")
 
 st.set_page_config(
-    page_title="三均線策略實盤分析",
+    page_title="台指期無限轉倉擇時策略",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
