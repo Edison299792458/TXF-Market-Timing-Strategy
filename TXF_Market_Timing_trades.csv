@@ -1,0 +1,2 @@
+﻿entry_time,entry_price,entry_dir,entry_reason,exit_time,exit_price,exit_reason,raw_points,export_slippage_one_way_pts,export_slippage_round_trip_pts,export_net_points,export_net_pnl
+2026-03-26 15:30:00,33496.0,LONG,15:15訊號進場,2026-03-27 15:30:00,32928.0,15:15訊號翻正_平倉,-568.0,2.0,4.0,-572.0,-114400.0
