@@ -358,7 +358,7 @@ def get_day_card_info(pnl_value):
 # ============================================
 @st.cache_data(ttl=60)
 def load_data():
-    file_path = "三均線_signal_trades.csv"
+    file_path = "TXF_Market_Timing_trades"
 
     if not os.path.exists(file_path):
         return pd.DataFrame()
