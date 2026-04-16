@@ -18,7 +18,7 @@ st_autorefresh(interval=60000, key="data_refresh")
 st.set_page_config(
     page_title="台指期無限轉倉擇時策略",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # ============================================
@@ -48,7 +48,6 @@ html, body, [class*="css"]  {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
-[data-testid="collapsedControl"] {display: none;}
 
 .dashboard-title {
     font-size: 2.1rem;
@@ -129,6 +128,25 @@ header {visibility: hidden;}
     font-size: 0.78rem;
     font-weight: 600;
     margin-right: 8px;
+}
+
+/* ===== Sidebar ===== */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, rgba(19,19,22,0.98) 0%, rgba(10,10,12,0.98) 100%);
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+}
+
+.sidebar-subtitle {
+    font-size: 0.84rem;
+    color: #9CA3AF;
+    margin-bottom: 16px;
 }
 
 /* ===== 月曆 ===== */
@@ -260,6 +278,32 @@ div[data-testid="stDataFrame"] {
     border-radius: 16px;
     overflow: hidden;
 }
+
+.strategy-block h3 {
+    color: #F9FAFB;
+    margin-top: 0.4rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.15rem;
+}
+
+.strategy-block p,
+.strategy-block li {
+    color: #D1D5DB;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+.strategy-block ol,
+.strategy-block ul {
+    padding-left: 1.2rem;
+}
+
+.strategy-highlight {
+    border-left: 4px solid #60A5FA;
+    padding-left: 14px;
+    margin: 10px 0 18px 0;
+    color: #E5E7EB;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -300,6 +344,12 @@ def get_period_start(latest_dt, period_label):
         return latest_dt - pd.DateOffset(months=9)
     elif period_label == "近12個月":
         return latest_dt - pd.DateOffset(months=12)
+    elif period_label == "近2年":
+        return latest_dt - pd.DateOffset(years=2)
+    elif period_label == "近3年":
+        return latest_dt - pd.DateOffset(years=3)
+    elif period_label == "近4年":
+        return latest_dt - pd.DateOffset(years=4)
     return None
 
 def get_month_options(df):
@@ -387,7 +437,89 @@ def load_data():
     return df
 
 # ============================================
-# [06] 頂部
+# [06] 側邊欄
+# ============================================
+with st.sidebar:
+    st.markdown('<div class="sidebar-title">📂 功能選單</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-subtitle">選擇要瀏覽的頁面</div>', unsafe_allow_html=True)
+
+    page = st.radio(
+        "頁面切換",
+        ["策略績效儀表板", "策略說明"],
+        index=0,
+        label_visibility="collapsed"
+    )
+
+    st.markdown("---")
+    st.caption("資料每 60 秒自動刷新一次")
+
+# ============================================
+# [07] 頁面：策略說明
+# ============================================
+if page == "策略說明":
+    st.markdown('<div class="dashboard-title">📘 台指期量化順勢策略說明</div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="panel strategy-block">
+        <div class="panel-title">台指期量化順勢策略：核心概念與優勢</div>
+        <div class="panel-subtitle">對外簡報 / 行銷介紹 / 客戶溝通版本</div>
+
+        <div class="strategy-highlight">
+            本策略專注於台灣加權指數期貨（台指期），透過量化回測與獨家籌碼濾網，
+            旨在順應台股長期趨勢的同時，有效避開無效波動與大幅回撤。
+        </div>
+
+        <h3>策略核心邏輯</h3>
+        <ol>
+            <li>
+                <strong>專注作多 (Long-Only)</strong><br>
+                順應台股長期具備向上成長的牛市特性，策略專注於捕捉多頭波段，
+                不逆勢放空，降低多空雙巴風險。
+            </li>
+            <li>
+                <strong>籌碼情緒濾網</strong><br>
+                這是策略的防護罩與進場依據。策略會每日追蹤特定的市場散戶籌碼指標，
+                例如小台、微台等多空情緒變化。只有當市場呈現
+                「散戶偏空、籌碼面有利於多方」的特定型態時，
+                策略才會允許進場或續抱多單；一旦籌碼優勢消失，便會果斷出場。
+            </li>
+        </ol>
+
+        <h3>策略設計理念</h3>
+        <ul>
+            <li>不是單純看到價格上漲就追，而是要同時通過趨勢與籌碼條件。</li>
+            <li>重視風險控制，避免在雜訊過多、優勢不明顯的區域頻繁交易。</li>
+            <li>核心目標不是追求每一段都做到，而是盡量做「勝率與盈虧比都較有優勢」的行情。</li>
+        </ul>
+
+        <h3>適合的市場環境</h3>
+        <ul>
+            <li>中期偏多、結構穩定的趨勢市場。</li>
+            <li>市場情緒過度悲觀，但實際上籌碼已逐漸轉向有利多方的時期。</li>
+            <li>適合希望參與台股多頭波段、但又不想完全暴露在短線噪音中的資金配置。</li>
+        </ul>
+
+        <h3>策略優勢</h3>
+        <ul>
+            <li><strong>順勢而為：</strong>與長期多頭方向一致，不與大趨勢對抗。</li>
+            <li><strong>加入籌碼濾網：</strong>降低假突破與無效進場的機率。</li>
+            <li><strong>風險意識明確：</strong>當條件不再有利時，退出市場而不是硬抱。</li>
+            <li><strong>量化執行：</strong>規則固定、可驗證、可持續追蹤績效。</li>
+        </ul>
+
+        <h3>一句話版本</h3>
+        <p>
+            這是一套以 <strong>台股長期多頭趨勢</strong> 為基礎，
+            再搭配 <strong>散戶籌碼情緒濾網</strong> 的量化順勢策略，
+            目的在於用更有紀律的方式，參與大方向、避開雜訊、控制回撤。
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
+
+# ============================================
+# [08] 頁面：策略績效儀表板
 # ============================================
 st.markdown('<div class="dashboard-title">📈 台指期無限轉倉擇時策略</div>', unsafe_allow_html=True)
 
@@ -401,7 +533,7 @@ if df.empty:
     st.markdown("""
     <div class="panel">
         <div class="panel-title">找不到資料</div>
-        <div class="panel-subtitle">找不到 `三均線_signal_trades.csv`，請確認檔案是否在同一資料夾。</div>
+        <div class="panel-subtitle">找不到 `TXF_Market_Timing_trades.csv`，請確認檔案是否在同一資料夾。</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop()
@@ -413,8 +545,8 @@ ctrl_col1, ctrl_col2 = st.columns([1.1, 1.1])
 with ctrl_col1:
     period_label = st.selectbox(
         "📆 選擇績效統計期間",
-        ["近1個月", "近3個月", "近9個月", "近12個月", "全部"],
-        index=4
+        ["近1個月", "近3個月", "近9個月", "近12個月", "近2年", "近3年", "近4年", "全部"],
+        index=5
     )
 
 period_start = get_period_start(latest_exit, period_label)
@@ -436,7 +568,7 @@ filtered_df["drawdown"] = filtered_df["cum_pnl"] - filtered_df["cum_peak"]
 month_options = get_month_options(filtered_df)
 
 # ============================================
-# [07] KPI
+# [09] KPI
 # ============================================
 total_pnl = filtered_df["export_net_pnl"].fillna(0).sum()
 total_trades = len(filtered_df)
@@ -514,7 +646,7 @@ with k6:
 st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
 # ============================================
-# [08] 資金曲線 + 右側分析
+# [10] 資金曲線 + 右側分析
 # ============================================
 left_col, right_col = st.columns([2.8, 1])
 
@@ -535,7 +667,7 @@ with left_col:
         y=filtered_df["cum_pnl"],
         text=filtered_df["Hover顯示"],
         mode="lines",
-        line=dict(color="#8B5CF6", width=4),
+        line=dict(color="#22C55E", width=3),
         name="累計損益",
         hovertemplate="<b>%{x}</b><br>累計損益: %{y:,.0f}<br>單趟: %{text}<extra></extra>"
     ))
@@ -607,8 +739,9 @@ with right_col:
         <div class="kpi-foot">進場至出場時間差</div>
     </div>
     """, unsafe_allow_html=True)
-    # ============================================
-# [09] 每日績效月曆
+
+# ============================================
+# [11] 每日績效月曆
 # ============================================
 st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
@@ -627,11 +760,6 @@ if selected_month is not None:
 
     month_df["exit_date"] = month_df["exit_time"].dt.date
 
-    # ==========================================================
-    # 這裡是本次唯一重點修改：
-    # 把所有「週六」績效併到前一天「週五」
-    # Python weekday(): Monday=0 ... Friday=4, Saturday=5, Sunday=6
-    # ==========================================================
     month_df["display_date"] = month_df["exit_date"].apply(
         lambda d: d - pd.Timedelta(days=1) if pd.Timestamp(d).weekday() == 5 else d
     )
@@ -724,7 +852,7 @@ if selected_month is not None:
             """, unsafe_allow_html=True)
 
 # ============================================
-# [10] 最新 10 筆平倉紀錄明細
+# [12] 最新 10 筆平倉紀錄明細
 # ============================================
 st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
@@ -762,10 +890,11 @@ def highlight_direction(val):
         return "color:#34D399; font-weight:700;"
     return ""
 
+# 這裡改成 .map()，避免新版 pandas / streamlit 環境下 Styler.applymap 的相容性問題
 styled_df = (
     recent_show_df.style
-    .applymap(highlight_pnl, subset=["淨損益 (NTD)"])
-    .applymap(highlight_direction, subset=["方向"])
+    .map(highlight_pnl, subset=["淨損益 (NTD)"])
+    .map(highlight_direction, subset=["方向"])
 )
 
 st.dataframe(
