@@ -11,18 +11,43 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
 # ============================================
-# [02] 基本設定
+# [02] 可調參數（之後要改先改這裡）
 # ============================================
-st_autorefresh(interval=60000, key="data_refresh")
+AUTO_REFRESH_MS = 60000
+
+# ===== 累積損益曲線顏色參數 =====
+# 線條顏色
+EQUITY_LINE_COLOR = "#22C55E"
+
+# 面積填色 RGB（不要加 rgba）
+# 例如綠色可用 "34,197,94"
+EQUITY_FILL_COLOR_RGB = "34,197,94"
+
+# 面積透明度：0 ~ 1
+# 數值越大，底下那塊顏色越深
+EQUITY_FILL_ALPHA = 0.22
+
+# ===== 側邊欄 / 頁面設定 =====
+PAGE_TITLE = "台指期無限轉倉擇時策略"
+INITIAL_SIDEBAR_STATE = "expanded"
+
+# ===== 預設績效期間 =====
+DEFAULT_PERIOD_OPTIONS = ["近1個月", "近3個月", "近9個月", "近12個月", "近2年", "近3年", "近4年", "全部"]
+DEFAULT_PERIOD_INDEX = 5   # 近3年
+
+# ============================================
+# [03] 基本設定
+# ============================================
+st_autorefresh(interval=AUTO_REFRESH_MS, key="data_refresh")
 
 st.set_page_config(
-    page_title="台指期無限轉倉擇時策略",
+    page_title=PAGE_TITLE,
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state=INITIAL_SIDEBAR_STATE
 )
 
 # ============================================
-# [03] 全站樣式
+# [04] 全站樣式
 # ============================================
 st.markdown("""
 <style>
@@ -141,7 +166,7 @@ header {visibility: hidden;}
     margin-right: 8px;
 }
 
-/* ========= Sidebar 全新設計 ========= */
+/* ========= Sidebar ========= */
 section[data-testid="stSidebar"] {
     background:
         linear-gradient(180deg, rgba(12,12,15,0.98) 0%, rgba(7,7,9,0.99) 100%) !important;
@@ -202,11 +227,6 @@ div[role="radiogroup"] > label:hover {
     box-shadow: 0 8px 20px rgba(0,0,0,0.20);
 }
 
-div[role="radiogroup"] > label[data-baseweb="radio"] > div {
-    color: #F3F4F6 !important;
-    font-weight: 700 !important;
-}
-
 .sidebar-info-card {
     background: linear-gradient(180deg, rgba(18,18,22,0.98) 0%, rgba(11,11,14,0.98) 100%);
     border: 1px solid rgba(255,255,255,0.06);
@@ -228,7 +248,7 @@ div[role="radiogroup"] > label[data-baseweb="radio"] > div {
     line-height: 1.7;
 }
 
-/* ========= 策略說明頁 ========= */
+/* ========= 策略說明 ========= */
 .strategy-panel {
     background: linear-gradient(180deg, rgba(18,18,22,0.98) 0%, rgba(10,10,12,0.99) 100%);
     border: 1px solid rgba(255,255,255,0.07);
@@ -439,8 +459,11 @@ div[data-testid="stDataFrame"] {
 """, unsafe_allow_html=True)
 
 # ============================================
-# [04] 共用函式
+# [05] 共用函式
 # ============================================
+def get_equity_fill_rgba():
+    return f"rgba({EQUITY_FILL_COLOR_RGB},{EQUITY_FILL_ALPHA})"
+
 def format_currency_tw(val):
     if pd.isna(val):
         val = 0
@@ -535,7 +558,7 @@ def get_day_card_info(pnl_value):
         }
 
 # ============================================
-# [05] 讀取資料
+# [06] 讀取資料
 # ============================================
 @st.cache_data(ttl=60)
 def load_data():
@@ -568,18 +591,9 @@ def load_data():
     return df
 
 # ============================================
-# [06] 頁面函式：策略說明
+# [07] 策略說明內容區塊（可重複呼叫）
 # ============================================
-def render_strategy_description_page():
-    st.markdown(
-        '<div class="dashboard-title">🟦 台指期量化順勢策略說明</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<div class="page-top-note">對外簡報、客戶介紹、行銷展示可直接使用的版本</div>',
-        unsafe_allow_html=True
-    )
-
+def render_strategy_description_block():
     st.markdown('<div class="strategy-panel">', unsafe_allow_html=True)
 
     st.markdown("""
@@ -667,7 +681,21 @@ def render_strategy_description_page():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# [07] 頁面函式：儀表板
+# [08] 頁面函式：策略說明頁
+# ============================================
+def render_strategy_description_page():
+    st.markdown(
+        '<div class="dashboard-title">🟦 台指期量化順勢策略說明</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="page-top-note">對外簡報、客戶介紹、行銷展示可直接使用的版本</div>',
+        unsafe_allow_html=True
+    )
+    render_strategy_description_block()
+
+# ============================================
+# [09] 頁面函式：儀表板
 # ============================================
 def render_dashboard_page():
     st.markdown('<div class="dashboard-title">📈 台指期無限轉倉擇時策略</div>', unsafe_allow_html=True)
@@ -695,8 +723,8 @@ def render_dashboard_page():
     with ctrl_col1:
         period_label = st.selectbox(
             "📆 選擇績效統計期間",
-            ["近1個月", "近3個月", "近9個月", "近12個月", "近2年", "近3年", "近4年", "全部"],
-            index=5
+            DEFAULT_PERIOD_OPTIONS,
+            index=DEFAULT_PERIOD_INDEX
         )
 
     period_start = get_period_start(latest_exit, period_label)
@@ -813,9 +841,9 @@ def render_dashboard_page():
             y=filtered_df["cum_pnl"],
             text=filtered_df["Hover顯示"],
             mode="lines",
-            line=dict(color="#22C55E", width=3),
+            line=dict(color=EQUITY_LINE_COLOR, width=3),
             fill="tozeroy",
-            fillcolor="rgba(34,197,94,0.08)",
+            fillcolor=get_equity_fill_rgba(),
             name="累計損益",
             hovertemplate="<b>%{x}</b><br>累計損益: %{y:,.0f}<br>單趟: %{text}<extra></extra>"
         ))
@@ -1047,8 +1075,18 @@ def render_dashboard_page():
         height=390
     )
 
+    # ===== 主頁也補一個策略說明摘要，避免使用者覺得「不見了」 =====
+    st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="panel">
+        <div class="panel-title">策略說明摘要</div>
+        <div class="panel-subtitle">主頁快速瀏覽版本；完整版本可由左側切換至「策略說明」</div>
+    </div>
+    """, unsafe_allow_html=True)
+    render_strategy_description_block()
+
 # ============================================
-# [08] 左側選單
+# [10] 左側選單
 # ============================================
 with st.sidebar:
     st.markdown("""
@@ -1069,19 +1107,20 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
-    st.markdown("""
+    st.markdown(f"""
     <div class="sidebar-info-card">
         <div class="sidebar-info-title">系統提示</div>
         <div class="sidebar-info-text">
-            • 資料每 60 秒自動刷新一次<br>
+            • 資料每 {AUTO_REFRESH_MS // 1000} 秒自動刷新一次<br>
             • 可隨時切換統計期間<br>
-            • 策略說明頁可直接用於客戶展示
+            • 主頁底部也保留策略說明摘要<br>
+            • 資金曲線填色透明度目前為 {EQUITY_FILL_ALPHA}
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 # ============================================
-# [09] 主頁面切換
+# [11] 主頁面切換
 # ============================================
 if page == "策略說明":
     render_strategy_description_page()
