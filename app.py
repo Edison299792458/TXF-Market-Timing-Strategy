@@ -251,14 +251,41 @@ header {visibility: hidden;}
 section[data-testid="stSidebar"] {
     background: #09090B !important;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
-    min-width: 280px !important;
-    max-width: 280px !important;
 }
 
-section[data-testid="stSidebar"] .block-container {
+section[data-testid="stSidebar"] > div {
+    background: #09090B !important;
+}
+
+section[data-testid="stSidebar"] .block-container,
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
     padding-top: 1.5rem !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
+}
+
+/* 這裡是這次修正的重點：強制 sidebar 內所有文字正常可見 */
+section[data-testid="stSidebar"],
+section[data-testid="stSidebar"] * {
+    color: #E4E4E7 !important;
+}
+
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] div {
+    color: inherit !important;
+}
+
+/* 避免新版 Streamlit 把選單壓到看不到 */
+section[data-testid="stSidebar"] {
+    min-width: 280px !important;
+}
+
+@media (min-width: 768px) {
+    section[data-testid="stSidebar"] {
+        width: 280px !important;
+    }
 }
 
 .sidebar-brand {
@@ -270,14 +297,14 @@ section[data-testid="stSidebar"] .block-container {
 .sidebar-brand-title {
     font-size: 0.875rem;
     font-weight: 700;
-    color: #FAFAFA;
+    color: #FAFAFA !important;
     margin-bottom: 4px;
     letter-spacing: -0.01em;
 }
 
 .sidebar-brand-subtitle {
     font-size: 0.6875rem;
-    color: #52525B;
+    color: #A1A1AA !important;
     line-height: 1.5;
     font-weight: 400;
 }
@@ -285,39 +312,52 @@ section[data-testid="stSidebar"] .block-container {
 .sidebar-section-title {
     font-size: 0.625rem;
     font-weight: 600;
-    color: #3F3F46;
+    color: #71717A !important;
     margin: 16px 0 10px 2px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
-div[role="radiogroup"] {
+/* radio 群組穩定顯示 */
+section[data-testid="stSidebar"] div[role="radiogroup"] {
     gap: 4px !important;
 }
 
-div[role="radiogroup"] > label {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 2px;
-    transition: all 0.15s ease;
+section[data-testid="stSidebar"] div[role="radiogroup"] > label {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 4px !important;
+    transition: all 0.15s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-div[role="radiogroup"] > label:hover {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.02);
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
 }
 
-div[role="radiogroup"] > label[data-checked="true"],
-div[role="radiogroup"] > label:has(input:checked) {
-    background: rgba(16, 185, 129, 0.06);
-    border-color: rgba(16, 185, 129, 0.2);
+section[data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"],
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
 }
 
-div[role="radiogroup"] > label p {
+section[data-testid="stSidebar"] div[role="radiogroup"] > label p,
+section[data-testid="stSidebar"] div[role="radiogroup"] > label span {
     font-size: 0.8125rem !important;
     font-weight: 500 !important;
+    color: #E4E4E7 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+section[data-testid="stSidebar"] input[type="radio"] {
+    accent-color: #10B981 !important;
 }
 
 .sidebar-info-card {
@@ -329,7 +369,7 @@ div[role="radiogroup"] > label p {
 .sidebar-info-title {
     font-size: 0.625rem;
     font-weight: 600;
-    color: #3F3F46;
+    color: #71717A !important;
     margin-bottom: 8px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -337,7 +377,7 @@ div[role="radiogroup"] > label p {
 
 .sidebar-info-text {
     font-size: 0.6875rem;
-    color: #52525B;
+    color: #A1A1AA !important;
     line-height: 1.8;
     font-weight: 400;
 }
