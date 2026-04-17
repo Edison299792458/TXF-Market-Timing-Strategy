@@ -11,32 +11,75 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
 # ============================================
-# [02] 可調參數（之後要改先改這裡）
+# [02] 🔧 策略描述文字 (要修改策略說明，改這裡就好)
+# ============================================
+# ------ 主標題區 ------
+STRATEGY_HERO_TITLE = "台指期量化順勢策略：核心概念與優勢"
+STRATEGY_HERO_TEXT = """
+本策略專注於台灣加權指數期貨（台指期），透過量化回測與獨家籌碼濾網，
+旨在順應台股長期趨勢的同時，有效避開無效波動與大幅回撤。
+"""
+
+# ------ 核心邏輯 ------
+STRATEGY_CORE_ITEMS = [
+    {
+        "title": "1. 專注作多 (Long-Only)",
+        "text": "順應台股長期具備向上成長的牛市特性，策略專注於捕捉多頭波段，不逆勢放空，降低多空雙巴的風險。"
+    },
+    {
+        "title": "2. 籌碼情緒濾網",
+        "text": "這是本策略的防護罩與進場依據。策略會每日追蹤特定的市場散戶籌碼指標（如小台、微台的多空情緒）。只有當市場呈現「散戶偏空、籌碼面有利於多方」的特定型態時，策略才會允許進場或續抱多單；一旦籌碼優勢消失，便會果斷出場。"
+    },
+]
+
+# ------ 設計理念 ------
+STRATEGY_DESIGN_BULLETS = [
+    "不是單純看到價格上漲就追，而是要同時通過趨勢與籌碼條件。",
+    "重視風險控管，避免在雜訊過多、優勢不明顯的區域頻繁交易。",
+    "核心目標不是每一段都做到，而是盡量做「勝率與盈虧比都較有優勢」的行情。",
+]
+
+# ------ 適合市場環境 ------
+STRATEGY_MARKET_BULLETS = [
+    "中期偏多、結構穩定的趨勢市場。",
+    "市場情緒過度悲觀，但實際上籌碼已逐漸轉向有利多方的時期。",
+    "適合希望參與台股多頭波段、但又不想完全暴露在短線噪音中的資金配置。",
+]
+
+# ------ 策略優勢 (支援粗體: 用 <b></b>) ------
+STRATEGY_ADVANTAGE_BULLETS = [
+    "<b>順勢而為：</b>與長期多頭方向一致，不與大趨勢對抗。",
+    "<b>加入籌碼濾網：</b>降低假突破與無效進場的機率。",
+    "<b>風險意識明確：</b>當條件不再有利時，退出市場而不是硬抱。",
+    "<b>量化執行：</b>規則固定、可驗證、可持續追蹤績效。",
+]
+
+# ------ 一句話總結 ------
+STRATEGY_ONE_LINE = """
+這是一套以台股長期多頭趨勢為基礎，再搭配散戶籌碼情緒濾網的量化順勢策略，
+目的在於用更有紀律的方式，參與大方向、避開雜訊、控制回撤。
+"""
+
+# ============================================
+# [03] 可調參數
 # ============================================
 AUTO_REFRESH_MS = 60000
 
-# ===== 累積損益曲線顏色參數 =====
-# 線條顏色
-EQUITY_LINE_COLOR = "#22C55E"
+# ===== 累積損益曲線顏色 =====
+EQUITY_LINE_COLOR = "#10B981"
+EQUITY_FILL_COLOR_RGB = "16,185,129"
+EQUITY_FILL_ALPHA = 0.15
 
-# 面積填色 RGB（不要加 rgba）
-# 例如綠色可用 "34,197,94"
-EQUITY_FILL_COLOR_RGB = "34,197,94"
-
-# 面積透明度：0 ~ 1
-# 數值越大，底下那塊顏色越深
-EQUITY_FILL_ALPHA = 0.22
-
-# ===== 側邊欄 / 頁面設定 =====
+# ===== 頁面設定 =====
 PAGE_TITLE = "台指期無限轉倉擇時策略"
 INITIAL_SIDEBAR_STATE = "expanded"
 
 # ===== 預設績效期間 =====
 DEFAULT_PERIOD_OPTIONS = ["近1個月", "近3個月", "近9個月", "近12個月", "近2年", "近3年", "近4年", "全部"]
-DEFAULT_PERIOD_INDEX = 5   # 近3年
+DEFAULT_PERIOD_INDEX = 5
 
 # ============================================
-# [03] 基本設定
+# [04] 基本設定
 # ============================================
 st_autorefresh(interval=AUTO_REFRESH_MS, key="data_refresh")
 
@@ -47,26 +90,30 @@ st.set_page_config(
 )
 
 # ============================================
-# [04] 全站樣式
+# [05] 全站樣式 (精緻高級版)
 # ============================================
 st.markdown("""
 <style>
+/* ========= 基礎 ========= */
 html, body, [class*="css"]  {
-    background-color: #050505 !important;
-    color: #F3F4F6 !important;
-    font-family: "Segoe UI", "Microsoft JhengHei", sans-serif !important;
+    background-color: #0A0A0B !important;
+    color: #E4E4E7 !important;
+    font-family: "Inter", "Segoe UI", "Microsoft JhengHei", -apple-system, sans-serif !important;
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .stApp {
     background:
-        radial-gradient(circle at top left, rgba(75, 85, 99, 0.10), transparent 30%),
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 25%),
-        linear-gradient(180deg, #070707 0%, #050505 100%) !important;
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.06), transparent),
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(59, 130, 246, 0.04), transparent),
+        linear-gradient(180deg, #0A0A0B 0%, #09090B 100%) !important;
 }
 
 .block-container {
-    padding-top: 1.1rem !important;
-    padding-bottom: 1.2rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
     max-width: 1720px !important;
 }
 
@@ -76,390 +123,586 @@ header {visibility: hidden;}
 
 /* ========= 主要標題 ========= */
 .dashboard-title {
-    font-size: 2.15rem;
-    font-weight: 900;
-    color: #FFFFFF;
-    margin-bottom: 0.85rem;
-    letter-spacing: 0.3px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-title-accent {
+    width: 4px;
+    height: 28px;
+    background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+    border-radius: 2px;
 }
 
 .page-top-note {
-    color: #9CA3AF;
-    font-size: 0.9rem;
-    margin-top: -4px;
-    margin-bottom: 18px;
+    color: #71717A;
+    font-size: 0.875rem;
+    margin-top: 4px;
+    margin-bottom: 28px;
+    font-weight: 400;
 }
 
 /* ========= 通用 panel ========= */
 .panel {
-    background: linear-gradient(180deg, rgba(19,19,22,0.96) 0%, rgba(10,10,12,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 22px;
-    padding: 18px 20px;
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0.6) 0%, rgba(15, 15, 17, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 20px 24px;
     box-shadow:
-        0 14px 42px rgba(0,0,0,0.42),
-        inset 0 1px 0 rgba(255,255,255,0.04);
-    margin-bottom: 18px;
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 20px 40px -12px rgba(0, 0, 0, 0.4);
+    margin-bottom: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .panel-title {
-    font-size: 1.04rem;
-    font-weight: 800;
-    color: #F9FAFB;
-    margin-bottom: 4px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #FAFAFA;
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
 }
 
 .panel-subtitle {
-    font-size: 0.86rem;
-    color: #9CA3AF;
+    font-size: 0.8125rem;
+    color: #71717A;
     margin-bottom: 12px;
+    font-weight: 400;
 }
 
 /* ========= KPI ========= */
 .kpi-card {
-    background: linear-gradient(180deg, rgba(20,20,24,0.98) 0%, rgba(10,10,12,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    padding: 16px 16px;
-    min-height: 124px;
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0.6) 0%, rgba(15, 15, 17, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 20px 22px;
+    min-height: 130px;
     box-shadow:
-        0 10px 30px rgba(0,0,0,0.38),
-        inset 0 1px 0 rgba(255,255,255,0.04);
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 10px 30px -10px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.kpi-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
 }
 
 .kpi-label {
-    font-size: 0.92rem;
+    font-size: 0.8125rem;
     color: #A1A1AA;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
 }
 
 .kpi-value {
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: #F9FAFB;
-    line-height: 1.15;
-    margin-bottom: 6px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    font-feature-settings: "tnum";
 }
 
 .kpi-foot {
-    font-size: 0.82rem;
-    color: #71717A;
+    font-size: 0.75rem;
+    color: #52525B;
+    font-weight: 400;
 }
 
 /* ========= 文字顏色 ========= */
-.text-red { color: #F87171 !important; }
-.text-green { color: #34D399 !important; }
-.text-blue { color: #60A5FA !important; }
-.text-purple { color: #A78BFA !important; }
-.text-orange { color: #FBBF24 !important; }
-.text-white { color: #FFFFFF !important; }
+.text-red { color: #EF4444 !important; }
+.text-green { color: #10B981 !important; }
+.text-blue { color: #3B82F6 !important; }
+.text-purple { color: #8B5CF6 !important; }
+.text-orange { color: #F59E0B !important; }
+.text-white { color: #FAFAFA !important; }
 
 .info-badge {
-    display: inline-block;
-    background: rgba(34,197,94,0.12);
-    border: 1px solid rgba(34,197,94,0.22);
-    color: #86EFAC;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
     margin-right: 8px;
+}
+
+.info-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: #10B981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
 }
 
 /* ========= Sidebar ========= */
 section[data-testid="stSidebar"] {
-    background:
-        linear-gradient(180deg, rgba(12,12,15,0.98) 0%, rgba(7,7,9,0.99) 100%) !important;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    min-width: 310px !important;
-    max-width: 310px !important;
+    background: linear-gradient(180deg, rgba(9, 9, 11, 0.98) 0%, rgba(6, 6, 8, 0.99) 100%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 290px !important;
+    max-width: 290px !important;
 }
 
 section[data-testid="stSidebar"] .block-container {
-    padding-top: 1rem !important;
+    padding-top: 1.5rem !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 }
 
 .sidebar-brand {
-    background: linear-gradient(135deg, rgba(59,130,246,0.16) 0%, rgba(139,92,246,0.10) 100%);
-    border: 1px solid rgba(96,165,250,0.18);
-    border-radius: 20px;
-    padding: 16px 16px 14px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 18px 18px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-brand::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
 }
 
 .sidebar-brand-title {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #FFFFFF;
-    margin-bottom: 4px;
-    letter-spacing: 0.2px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
 }
 
 .sidebar-brand-subtitle {
-    font-size: 0.82rem;
-    color: #C7D2FE;
-    line-height: 1.5;
+    font-size: 0.75rem;
+    color: #A1A1AA;
+    line-height: 1.6;
+    font-weight: 400;
 }
 
 .sidebar-section-title {
-    font-size: 0.80rem;
-    font-weight: 800;
-    color: #9CA3AF;
-    margin: 10px 0 8px 2px;
-    letter-spacing: 1.2px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #71717A;
+    margin: 14px 0 10px 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+div[role="radiogroup"] {
+    gap: 6px !important;
 }
 
 div[role="radiogroup"] > label {
-    background: linear-gradient(180deg, rgba(22,22,27,0.96) 0%, rgba(12,12,15,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    transition: all 0.18s ease;
+    background: rgba(24, 24, 27, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 4px;
+    transition: all 0.15s ease;
 }
 
 div[role="radiogroup"] > label:hover {
-    border: 1px solid rgba(96,165,250,0.35);
-    background: linear-gradient(180deg, rgba(28,28,34,0.98) 0%, rgba(14,14,18,0.98) 100%);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.20);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    background: rgba(24, 24, 27, 0.7);
+}
+
+div[role="radiogroup"] > label p {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
 }
 
 .sidebar-info-card {
-    background: linear-gradient(180deg, rgba(18,18,22,0.98) 0%, rgba(11,11,14,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    padding: 14px 14px;
-    margin-top: 16px;
+    background: rgba(24, 24, 27, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 20px;
 }
 
 .sidebar-info-title {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #F9FAFB;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #E4E4E7;
     margin-bottom: 8px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .sidebar-info-text {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #A1A1AA;
     line-height: 1.7;
+    font-weight: 400;
 }
 
 /* ========= 策略說明 ========= */
 .strategy-panel {
-    background: linear-gradient(180deg, rgba(18,18,22,0.98) 0%, rgba(10,10,12,0.99) 100%);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 24px;
-    padding: 24px 26px;
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0.6) 0%, rgba(15, 15, 17, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    padding: 32px 36px;
     box-shadow:
-        0 16px 48px rgba(0,0,0,0.40),
-        inset 0 1px 0 rgba(255,255,255,0.04);
-    margin-bottom: 18px;
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 20px 40px -12px rgba(0, 0, 0, 0.4);
+    margin-bottom: 16px;
 }
 
 .strategy-hero {
-    background: linear-gradient(135deg, rgba(59,130,246,0.16) 0%, rgba(34,197,94,0.10) 100%);
-    border: 1px solid rgba(96,165,250,0.20);
-    border-radius: 18px;
-    padding: 18px 18px;
-    margin-top: 8px;
-    margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-top: 4px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+.strategy-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent);
 }
 
 .strategy-hero-title {
-    font-size: 1.04rem;
-    font-weight: 900;
-    color: #FFFFFF;
-    margin-bottom: 8px;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
 }
 
 .strategy-hero-text {
-    font-size: 0.98rem;
-    line-height: 1.9;
-    color: #E5E7EB;
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: #D4D4D8;
+    font-weight: 400;
 }
 
 .strategy-section-head {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #F9FAFB;
-    margin-top: 18px;
-    margin-bottom: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.strategy-section-head::before {
+    content: "";
+    width: 3px;
+    height: 16px;
+    background: linear-gradient(180deg, #10B981, #059669);
+    border-radius: 2px;
 }
 
 .strategy-item {
-    background: linear-gradient(180deg, rgba(20,20,25,0.88) 0%, rgba(11,11,14,0.96) 100%);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 18px;
-    padding: 16px 16px;
-    margin-bottom: 12px;
+    background: rgba(24, 24, 27, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.strategy-item:hover {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(24, 24, 27, 0.6);
 }
 
 .strategy-item-title {
-    font-size: 0.98rem;
-    font-weight: 900;
-    color: #FFFFFF;
-    margin-bottom: 6px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
 }
 
 .strategy-item-text {
-    font-size: 0.95rem;
-    line-height: 1.85;
-    color: #D1D5DB;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: #A1A1AA;
+    font-weight: 400;
 }
 
 .strategy-bullet-box {
-    background: linear-gradient(180deg, rgba(18,18,22,0.92) 0%, rgba(11,11,14,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    padding: 16px 18px;
-    margin-bottom: 14px;
+    background: rgba(24, 24, 27, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 10px;
+}
+
+.strategy-bullet-item {
+    font-size: 0.875rem;
+    line-height: 1.9;
+    color: #D4D4D8;
+    padding-left: 18px;
+    position: relative;
+    font-weight: 400;
+}
+
+.strategy-bullet-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 5px;
+    height: 5px;
+    background: #10B981;
+    border-radius: 50%;
 }
 
 .strategy-one-line {
-    font-size: 1rem;
-    line-height: 1.9;
-    color: #F3F4F6;
-    font-weight: 700;
+    font-size: 0.9375rem;
+    line-height: 1.85;
+    color: #E4E4E7;
+    font-weight: 500;
+    letter-spacing: -0.005em;
 }
 
 /* ========= 月曆 ========= */
 .calendar-head {
     text-align: center;
-    color: #C7CDD8;
-    font-size: 0.90rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+    color: #71717A;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .calendar-side-head {
     text-align: center;
     color: transparent;
-    font-size: 0.90rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .calendar-empty {
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
     min-height: 110px;
-    padding: 10px 10px;
-    background: rgba(255,255,255,0.02);
-    margin-bottom: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.01);
+    margin-bottom: 8px;
 }
 
 .calendar-card-neutral {
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     min-height: 110px;
-    padding: 10px 10px;
-    background: rgba(12,14,20,0.92);
-    margin-bottom: 10px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    padding: 10px 12px;
+    background: rgba(24, 24, 27, 0.5);
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+
+.calendar-card-neutral:hover {
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .calendar-card-pos {
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
     min-height: 110px;
-    padding: 10px 10px;
-    background: linear-gradient(180deg, rgba(120,28,28,0.92) 0%, rgba(78,18,18,0.96) 100%);
-    margin-bottom: 10px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    padding: 10px 12px;
+    background: linear-gradient(180deg, rgba(127, 29, 29, 0.5) 0%, rgba(87, 20, 20, 0.7) 100%);
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+
+.calendar-card-pos:hover {
+    border-color: rgba(239, 68, 68, 0.35);
 }
 
 .calendar-card-neg {
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
     min-height: 110px;
-    padding: 10px 10px;
-    background: linear-gradient(180deg, rgba(6,78,59,0.92) 0%, rgba(4,52,40,0.96) 100%);
-    margin-bottom: 10px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    padding: 10px 12px;
+    background: linear-gradient(180deg, rgba(6, 78, 59, 0.5) 0%, rgba(4, 52, 40, 0.7) 100%);
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+
+.calendar-card-neg:hover {
+    border-color: rgba(16, 185, 129, 0.35);
 }
 
 .day-num {
-    font-size: 0.88rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #FFFFFF;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #E4E4E7;
+    font-feature-settings: "tnum";
 }
 
 .day-pnl-pos {
-    font-size: 1.02rem;
-    font-weight: 800;
+    font-size: 0.9375rem;
+    font-weight: 700;
     line-height: 1.15;
     margin-bottom: 6px;
-    color: #FFD4D4;
+    color: #FCA5A5;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.01em;
 }
 
 .day-pnl-neg {
-    font-size: 1.02rem;
-    font-weight: 800;
+    font-size: 0.9375rem;
+    font-weight: 700;
     line-height: 1.15;
     margin-bottom: 6px;
-    color: #C7FFE8;
+    color: #6EE7B7;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.01em;
 }
 
 .day-sub-pos {
-    font-size: 0.76rem;
-    line-height: 1.35;
-    color: #FFDCDC;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #FECACA;
+    font-weight: 400;
 }
 
 .day-sub-neg {
-    font-size: 0.76rem;
-    line-height: 1.35;
-    color: #D1FFEE;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #A7F3D0;
+    font-weight: 400;
 }
 
 .day-sub-neutral {
-    font-size: 0.76rem;
-    line-height: 1.35;
-    color: #FFFFFF;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #A1A1AA;
+    font-weight: 400;
 }
 
 .week-side-card {
-    background: linear-gradient(180deg, rgba(20,20,24,0.98) 0%, rgba(10,10,12,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
+    background: rgba(24, 24, 27, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
     padding: 12px 14px;
     min-height: 110px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+
+.week-side-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .week-side-title {
-    font-size: 0.82rem;
-    color: #E5E7EB;
+    font-size: 0.6875rem;
+    color: #71717A;
     margin-bottom: 10px;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .week-side-pnl {
-    font-size: 1.2rem;
-    font-weight: 800;
+    font-size: 1.0625rem;
+    font-weight: 700;
     margin-bottom: 6px;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.01em;
 }
 
 .week-side-sub {
-    font-size: 0.78rem;
-    color: #A1A1AA;
+    font-size: 0.6875rem;
+    color: #71717A;
+    font-weight: 400;
 }
 
 div[data-testid="stDataFrame"] {
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
     overflow: hidden;
+}
+
+/* ========= Buttons ========= */
+.stButton > button {
+    background: rgba(24, 24, 27, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #E4E4E7 !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    border-radius: 10px !important;
+    padding: 8px 16px !important;
+    transition: all 0.15s ease !important;
+}
+
+.stButton > button:hover {
+    background: rgba(24, 24, 27, 0.9) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #FAFAFA !important;
+}
+
+/* ========= Selectbox ========= */
+div[data-baseweb="select"] > div {
+    background: rgba(24, 24, 27, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+}
+
+/* ========= Monthly header ========= */
+.month-header {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #FAFAFA;
+    margin: 8px 0 16px 0;
+    letter-spacing: -0.01em;
+    font-feature-settings: "tnum";
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================
-# [05] 共用函式
+# [06] 共用函式
 # ============================================
 def get_equity_fill_rgba():
     return f"rgba({EQUITY_FILL_COLOR_RGB},{EQUITY_FILL_ALPHA})"
@@ -526,17 +769,6 @@ def safe_direction_text(x):
         return "空 (SHORT)"
     return x
 
-def calc_avg_duration_str(series):
-    if len(series) == 0:
-        return "N/A"
-    avg_duration = series.mean()
-    if pd.isna(avg_duration):
-        return "N/A"
-    total_seconds = int(avg_duration.total_seconds())
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-    return f"{hours}小時 {minutes}分"
-
 def get_day_card_info(pnl_value):
     if pd.isna(pnl_value) or pnl_value == 0:
         return {
@@ -558,7 +790,7 @@ def get_day_card_info(pnl_value):
         }
 
 # ============================================
-# [06] 讀取資料
+# [07] 讀取資料
 # ============================================
 @st.cache_data(ttl=60)
 def load_data():
@@ -591,117 +823,84 @@ def load_data():
     return df
 
 # ============================================
-# [07] 策略說明內容區塊（可重複呼叫）
+# [08] 策略說明內容區塊
 # ============================================
 def render_strategy_description_block():
     st.markdown('<div class="strategy-panel">', unsafe_allow_html=True)
 
-    st.markdown("""
+    # Hero 區
+    st.markdown(f"""
     <div class="strategy-hero">
-        <div class="strategy-hero-title">台指期量化順勢策略：核心概念與優勢</div>
-        <div class="strategy-hero-text">
-            本策略專注於台灣加權指數期貨（台指期），透過量化回測與獨家籌碼濾網，
-            旨在順應台股長期趨勢的同時，有效避開無效波動與大幅回撤。
-        </div>
+        <div class="strategy-hero-title">{STRATEGY_HERO_TITLE}</div>
+        <div class="strategy-hero-text">{STRATEGY_HERO_TEXT.strip()}</div>
     </div>
     """, unsafe_allow_html=True)
 
+    # 核心邏輯
     st.markdown('<div class="strategy-section-head">策略核心邏輯</div>', unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="strategy-item">
-        <div class="strategy-item-title">1. 專注作多 (Long-Only)</div>
-        <div class="strategy-item-text">
-            順應台股長期具備向上成長的牛市特性，策略專注於捕捉多頭波段，
-            不逆勢放空，降低多空雙巴的風險。
+    for item in STRATEGY_CORE_ITEMS:
+        st.markdown(f"""
+        <div class="strategy-item">
+            <div class="strategy-item-title">{item['title']}</div>
+            <div class="strategy-item-text">{item['text']}</div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="strategy-item">
-        <div class="strategy-item-title">2. 籌碼情緒濾網</div>
-        <div class="strategy-item-text">
-            這是本策略的防護罩與進場依據。策略會每日追蹤特定的市場散戶籌碼指標
-            （如小台、微台的多空情緒）。只有當市場呈現
-            「散戶偏空、籌碼面有利於多方」的特定型態時，
-            策略才會允許進場或續抱多單；一旦籌碼優勢消失，便會果斷出場。
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # 設計理念
     st.markdown('<div class="strategy-section-head">策略設計理念</div>', unsafe_allow_html=True)
+    st.markdown('<div class="strategy-bullet-box">', unsafe_allow_html=True)
+    for bullet in STRATEGY_DESIGN_BULLETS:
+        st.markdown(f'<div class="strategy-bullet-item">{bullet}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="strategy-bullet-box">
-        <div class="strategy-item-text">
-            • 不是單純看到價格上漲就追，而是要同時通過趨勢與籌碼條件。<br>
-            • 重視風險控管，避免在雜訊過多、優勢不明顯的區域頻繁交易。<br>
-            • 核心目標不是每一段都做到，而是盡量做「勝率與盈虧比都較有優勢」的行情。
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # 適合市場環境
     st.markdown('<div class="strategy-section-head">適合的市場環境</div>', unsafe_allow_html=True)
+    st.markdown('<div class="strategy-bullet-box">', unsafe_allow_html=True)
+    for bullet in STRATEGY_MARKET_BULLETS:
+        st.markdown(f'<div class="strategy-bullet-item">{bullet}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="strategy-bullet-box">
-        <div class="strategy-item-text">
-            • 中期偏多、結構穩定的趨勢市場。<br>
-            • 市場情緒過度悲觀，但實際上籌碼已逐漸轉向有利多方的時期。<br>
-            • 適合希望參與台股多頭波段、但又不想完全暴露在短線噪音中的資金配置。
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # 策略優勢
     st.markdown('<div class="strategy-section-head">策略優勢</div>', unsafe_allow_html=True)
+    st.markdown('<div class="strategy-bullet-box">', unsafe_allow_html=True)
+    for bullet in STRATEGY_ADVANTAGE_BULLETS:
+        st.markdown(f'<div class="strategy-bullet-item">{bullet}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="strategy-bullet-box">
-        <div class="strategy-item-text">
-            • <b>順勢而為：</b>與長期多頭方向一致，不與大趨勢對抗。<br>
-            • <b>加入籌碼濾網：</b>降低假突破與無效進場的機率。<br>
-            • <b>風險意識明確：</b>當條件不再有利時，退出市場而不是硬抱。<br>
-            • <b>量化執行：</b>規則固定、可驗證、可持續追蹤績效。
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # 一句話
     st.markdown('<div class="strategy-section-head">一句話版本</div>', unsafe_allow_html=True)
-
-    st.markdown("""
+    st.markdown(f"""
     <div class="strategy-bullet-box">
-        <div class="strategy-one-line">
-            這是一套以台股長期多頭趨勢為基礎，再搭配散戶籌碼情緒濾網的量化順勢策略，
-            目的在於用更有紀律的方式，參與大方向、避開雜訊、控制回撤。
-        </div>
+        <div class="strategy-one-line">{STRATEGY_ONE_LINE.strip()}</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# [08] 頁面函式：策略說明頁
+# [09] 頁面：策略說明
 # ============================================
 def render_strategy_description_page():
     st.markdown(
-        '<div class="dashboard-title">🟦 台指期量化順勢策略說明</div>',
+        '<div class="dashboard-title"><span class="dashboard-title-accent"></span>台指期量化順勢策略說明</div>',
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="page-top-note">對外簡報、客戶介紹、行銷展示可直接使用的版本</div>',
+        '<div class="page-top-note">完整策略理念、核心邏輯與市場適用性說明</div>',
         unsafe_allow_html=True
     )
     render_strategy_description_block()
 
 # ============================================
-# [09] 頁面函式：儀表板
+# [10] 頁面：儀表板
 # ============================================
 def render_dashboard_page():
-    st.markdown('<div class="dashboard-title">📈 台指期無限轉倉擇時策略</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-top-note">自動刷新資料、追蹤淨值曲線、月曆與最新交易紀錄</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="dashboard-title"><span class="dashboard-title-accent"></span>台指期無限轉倉擇時策略</div>',
+        unsafe_allow_html=True
+    )
 
-    if st.button("🔄 獲取最新資料 (重整)"):
+    if st.button("🔄 獲取最新資料"):
         st.cache_data.clear()
         st.rerun()
 
@@ -722,7 +921,7 @@ def render_dashboard_page():
 
     with ctrl_col1:
         period_label = st.selectbox(
-            "📆 選擇績效統計期間",
+            "📆 績效統計期間",
             DEFAULT_PERIOD_OPTIONS,
             index=DEFAULT_PERIOD_INDEX
         )
@@ -749,8 +948,6 @@ def render_dashboard_page():
     total_pnl = filtered_df["export_net_pnl"].fillna(0).sum()
     total_trades = len(filtered_df)
     win_trades = (filtered_df["export_net_pnl"].fillna(0) > 0).sum()
-    loss_trades = (filtered_df["export_net_pnl"].fillna(0) < 0).sum()
-    flat_trades = (filtered_df["export_net_pnl"].fillna(0) == 0).sum()
     win_rate = (win_trades / total_trades * 100) if total_trades > 0 else 0
 
     running_days = (filtered_df["exit_time"].max() - filtered_df["entry_time"].min()).days
@@ -821,107 +1018,81 @@ def render_dashboard_page():
 
     st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
 
-    # 資金曲線 + 右側分析
-    left_col, right_col = st.columns([2.8, 1])
-
-    with left_col:
-        st.markdown("""
-        <div class="panel" style="margin-bottom:0px; border-bottom-left-radius:0px; border-bottom-right-radius:0px; border-bottom:none;">
-            <div class="panel-title">累計資金曲線 (Equity Curve)</div>
-            <div class="panel-subtitle" style="margin-bottom:0px;">
-                <span class="info-badge">策略淨值</span>
-            </div>
+    # 資金曲線 (全寬)
+    st.markdown("""
+    <div class="panel" style="margin-bottom:0px;">
+        <div class="panel-title">累計資金曲線 (Equity Curve)</div>
+        <div class="panel-subtitle" style="margin-bottom:6px;">
+            <span class="info-badge">策略淨值</span>
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
-        fig_equity = go.Figure()
+    fig_equity = go.Figure()
 
-        fig_equity.add_trace(go.Scatter(
-            x=filtered_df["日期文字"],
-            y=filtered_df["cum_pnl"],
-            text=filtered_df["Hover顯示"],
-            mode="lines",
-            line=dict(color=EQUITY_LINE_COLOR, width=3),
-            fill="tozeroy",
-            fillcolor=get_equity_fill_rgba(),
-            name="累計損益",
-            hovertemplate="<b>%{x}</b><br>累計損益: %{y:,.0f}<br>單趟: %{text}<extra></extra>"
-        ))
+    fig_equity.add_trace(go.Scatter(
+        x=filtered_df["日期文字"],
+        y=filtered_df["cum_pnl"],
+        text=filtered_df["Hover顯示"],
+        mode="lines",
+        line=dict(color=EQUITY_LINE_COLOR, width=2.5, shape="spline", smoothing=0.3),
+        fill="tozeroy",
+        fillcolor=get_equity_fill_rgba(),
+        name="累計損益",
+        hovertemplate="<b>%{x}</b><br>累計損益: %{y:,.0f}<br>單趟: %{text}<extra></extra>"
+    ))
 
-        fig_equity.update_layout(
-            template="plotly_dark",
-            height=390,
-            margin=dict(l=18, r=18, t=10, b=18),
-            paper_bgcolor="rgba(19,19,22,0.96)",
-            plot_bgcolor="rgba(19,19,22,0.96)",
-            xaxis=dict(
-                title="",
-                type="category",
-                showgrid=False,
-                tickfont=dict(size=12, color="#A1A1AA"),
-                showline=False,
-                zeroline=False,
-                nticks=10
-            ),
-            yaxis=dict(
-                title="",
-                gridcolor="rgba(255,255,255,0.08)",
-                tickfont=dict(size=12, color="#A1A1AA"),
-                zeroline=True,
-                zerolinecolor="rgba(255,255,255,0.2)",
-                separatethousands=True
-            ),
-            showlegend=False
+    fig_equity.update_layout(
+        template="plotly_dark",
+        height=420,
+        margin=dict(l=20, r=20, t=20, b=20),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(
+            title="",
+            type="category",
+            showgrid=False,
+            tickfont=dict(size=11, color="#71717A", family="Inter, sans-serif"),
+            showline=False,
+            zeroline=False,
+            nticks=10
+        ),
+        yaxis=dict(
+            title="",
+            gridcolor="rgba(255,255,255,0.04)",
+            tickfont=dict(size=11, color="#71717A", family="Inter, sans-serif"),
+            zeroline=True,
+            zerolinecolor="rgba(255,255,255,0.1)",
+            zerolinewidth=1,
+            separatethousands=True
+        ),
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="rgba(24, 24, 27, 0.95)",
+            bordercolor="rgba(255,255,255,0.1)",
+            font=dict(family="Inter, sans-serif", size=12, color="#FAFAFA")
         )
+    )
 
-        st.plotly_chart(fig_equity, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig_equity, use_container_width=True, config={"displayModeBar": False})
 
-        if len(month_options) > 0:
-            selected_month = st.selectbox(
-                "🗓️ 選擇月曆月份",
-                options=month_options,
-                index=0,
-                key="calendar_month_select"
-            )
-        else:
-            selected_month = None
-
-    with right_col:
-        st.markdown("""
-        <div class="panel">
-            <div class="panel-title">策略維度分析</div>
-            <div class="panel-subtitle">勝敗場與平均時長</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown(f"""
-        <div class="kpi-card" style="margin-bottom:14px;">
-            <div class="kpi-label">勝 / 敗 / 平</div>
-            <div class="kpi-value" style="font-size:1.55rem;">
-                <span class="text-red">{win_trades}</span> /
-                <span class="text-green">{loss_trades}</span> /
-                {flat_trades}
-            </div>
-            <div class="kpi-foot">依單筆損益統計</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        duration_str = calc_avg_duration_str(filtered_df["duration"])
-
-        st.markdown(f"""
-        <div class="kpi-card" style="margin-bottom:14px;">
-            <div class="kpi-label">平均持倉時間</div>
-            <div class="kpi-value" style="font-size:1.55rem; color:#60A5FA;">{duration_str}</div>
-            <div class="kpi-foot">進場至出場時間差</div>
-        </div>
-        """, unsafe_allow_html=True)
+    if len(month_options) > 0:
+        selected_month = st.selectbox(
+            "🗓️ 選擇月曆月份",
+            options=month_options,
+            index=0,
+            key="calendar_month_select"
+        )
+    else:
+        selected_month = None
 
     # 每日績效月曆
-    st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="panel">
         <div class="panel-title">每日績效月曆</div>
+        <div class="panel-subtitle">紅色為獲利、綠色為虧損 (台股顏色慣例)</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -954,7 +1125,7 @@ def render_dashboard_page():
         }
 
         title_dt = datetime(year, month, 1)
-        st.markdown(f"### {title_dt.strftime('%Y-%m')}")
+        st.markdown(f"<div class='month-header'>{title_dt.strftime('%Y 年 %m 月')}</div>", unsafe_allow_html=True)
 
         col_widths = [1, 1, 1, 1, 1, 1, 1, 1.45]
 
@@ -1026,11 +1197,12 @@ def render_dashboard_page():
                 """, unsafe_allow_html=True)
 
     # 最新 10 筆平倉紀錄明細
-    st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="panel" style="margin-bottom:10px;">
         <div class="panel-title">最新 10 筆平倉紀錄明細</div>
+        <div class="panel-subtitle">依出場時間倒序排列</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1050,16 +1222,16 @@ def render_dashboard_page():
     def highlight_pnl(val):
         if isinstance(val, str):
             if val.startswith("+$"):
-                return "color:#F87171; font-weight:700;"
+                return "color:#EF4444; font-weight:600;"
             elif val.startswith("-$"):
-                return "color:#34D399; font-weight:700;"
+                return "color:#10B981; font-weight:600;"
         return ""
 
     def highlight_direction(val):
         if val == "多 (LONG)":
-            return "color:#F87171; font-weight:700;"
+            return "color:#EF4444; font-weight:600;"
         elif val == "空 (SHORT)":
-            return "color:#34D399; font-weight:700;"
+            return "color:#10B981; font-weight:600;"
         return ""
 
     styled_df = (
@@ -1075,30 +1247,20 @@ def render_dashboard_page():
         height=390
     )
 
-    # ===== 主頁也補一個策略說明摘要，避免使用者覺得「不見了」 =====
-    st.markdown("<div style='height:18px;'></div>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class="panel">
-        <div class="panel-title">策略說明摘要</div>
-        <div class="panel-subtitle">主頁快速瀏覽版本；完整版本可由左側切換至「策略說明」</div>
-    </div>
-    """, unsafe_allow_html=True)
-    render_strategy_description_block()
-
 # ============================================
-# [10] 左側選單
+# [11] 左側選單
 # ============================================
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
         <div class="sidebar-brand-title">📊 台指期策略中心</div>
         <div class="sidebar-brand-subtitle">
-            策略績效展示、資金曲線追蹤、月曆檢視與策略介紹整合介面
+            績效展示 · 資金曲線 · 月曆檢視 · 策略介紹
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="sidebar-section-title">NAVIGATION</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-section-title">Navigation</div>', unsafe_allow_html=True)
 
     page = st.radio(
         "頁面切換",
@@ -1109,18 +1271,17 @@ with st.sidebar:
 
     st.markdown(f"""
     <div class="sidebar-info-card">
-        <div class="sidebar-info-title">系統提示</div>
+        <div class="sidebar-info-title">System Info</div>
         <div class="sidebar-info-text">
-            • 資料每 {AUTO_REFRESH_MS // 1000} 秒自動刷新一次<br>
-            • 可隨時切換統計期間<br>
-            • 主頁底部也保留策略說明摘要<br>
-            • 資金曲線填色透明度目前為 {EQUITY_FILL_ALPHA}
+            資料每 {AUTO_REFRESH_MS // 1000} 秒自動刷新<br>
+            可隨時切換統計期間<br>
+            資料來源：TXF_Market_Timing_trades.csv
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 # ============================================
-# [11] 主頁面切換
+# [12] 主頁面切換
 # ============================================
 if page == "策略說明":
     render_strategy_description_page()
