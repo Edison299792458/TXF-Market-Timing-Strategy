@@ -116,7 +116,7 @@ html, body, [class*="css"] {
 
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;}
+header {background: transparent !important;}
 
 /* ========= 標題 ========= */
 .dashboard-title {
@@ -264,30 +264,22 @@ section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
     padding-right: 1rem !important;
 }
 
-/* 這裡是這次修正的重點：強制 sidebar 內所有文字正常可見 */
-section[data-testid="stSidebar"],
-section[data-testid="stSidebar"] * {
-    color: #E4E4E7 !important;
-}
-
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] span,
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] div {
-    color: inherit !important;
-}
-
-/* 避免新版 Streamlit 把選單壓到看不到 */
-section[data-testid="stSidebar"] {
-    min-width: 280px !important;
-}
-
+/* 讓左側欄保持可見，不要被壓到完全消失 */
 @media (min-width: 768px) {
     section[data-testid="stSidebar"] {
-        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 280px !important;
     }
 }
 
+/* sidebar 裡所有文字先強制恢復可見 */
+section[data-testid="stSidebar"],
+section[data-testid="stSidebar"] * {
+    color: #E4E4E7 !important;
+    opacity: 1 !important;
+}
+
+/* 品牌區 */
 .sidebar-brand {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     padding: 0 0 18px 0;
@@ -318,48 +310,60 @@ section[data-testid="stSidebar"] {
     text-transform: uppercase;
 }
 
-/* radio 群組穩定顯示 */
+/* Streamlit radio 外框 */
 section[data-testid="stSidebar"] div[role="radiogroup"] {
-    gap: 4px !important;
+    gap: 6px !important;
 }
 
 section[data-testid="stSidebar"] div[role="radiogroup"] > label {
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    border-radius: 8px !important;
-    padding: 10px 12px !important;
-    margin-bottom: 4px !important;
-    transition: all 0.15s ease !important;
     display: flex !important;
     align-items: center !important;
-    opacity: 1 !important;
+    width: 100% !important;
+    padding: 10px 12px !important;
+    margin-bottom: 4px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    cursor: pointer !important;
     visibility: visible !important;
 }
 
 section[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
     border-color: rgba(255, 255, 255, 0.12) !important;
-    background: rgba(255, 255, 255, 0.02) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
 }
 
-section[data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"],
-section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
-    background: rgba(16, 185, 129, 0.08) !important;
-    border-color: rgba(16, 185, 129, 0.25) !important;
+/* 被選到的項目 */
+section[data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
+    background: rgba(16, 185, 129, 0.10) !important;
+    border-color: rgba(16, 185, 129, 0.30) !important;
 }
 
-section[data-testid="stSidebar"] div[role="radiogroup"] > label p,
-section[data-testid="stSidebar"] div[role="radiogroup"] > label span {
+/* 有些版本不吃 data-checked，改抓 aria-checked */
+section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input[aria-checked="true"]) {
+    background: rgba(16, 185, 129, 0.10) !important;
+    border-color: rgba(16, 185, 129, 0.30) !important;
+}
+
+/* radio 文字 */
+section[data-testid="stSidebar"] div[role="radiogroup"] label p,
+section[data-testid="stSidebar"] div[role="radiogroup"] label span,
+section[data-testid="stSidebar"] div[role="radiogroup"] label div {
+    color: #E4E4E7 !important;
     font-size: 0.8125rem !important;
     font-weight: 500 !important;
-    color: #E4E4E7 !important;
     opacity: 1 !important;
     visibility: visible !important;
 }
 
+/* radio 圓點本身 */
 section[data-testid="stSidebar"] input[type="radio"] {
     accent-color: #10B981 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
+/* System 區 */
 .sidebar-info-card {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     padding: 16px 0 0 0;
